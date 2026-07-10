@@ -32,6 +32,15 @@ class EmailsResponse(BaseModel):
     emails: List[EmailOut]
 
 
+@app.get("/")
+def root() -> dict:
+    return {
+        "service": "email2telegram-api",
+        "status": "ok",
+        "endpoints": {"emails": "/emails", "health": "/health", "docs": "/docs"},
+    }
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}

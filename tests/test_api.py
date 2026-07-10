@@ -57,6 +57,12 @@ def test_health():
     assert r.json() == {"status": "ok"}
 
 
+def test_root():
+    r = client.get("/")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"
+
+
 def test_filters_return_only_matching_and_pass_days_since():
     r = client.get("/emails", params={"days_since": 15, "filter_subject": "Last War", "filter_body": "Email"})
     assert r.status_code == 200

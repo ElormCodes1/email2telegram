@@ -19,7 +19,8 @@ USER appuser
 
 EXPOSE 8000
 
-# Default: run the read-only query API.
+# Default: run the read-only query API. Binds $PORT if the platform sets one
+# (e.g. Coolify/Heroku), otherwise 8000. exec keeps uvicorn as PID 1 for signals.
 # To run the IMAP -> Telegram monitor instead, override the command:
 #   docker run --env-file .env <image> python email2telegram.py
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "exec uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}"]
