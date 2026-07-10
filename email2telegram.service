@@ -1,0 +1,26 @@
+[Unit]
+Description=Email to Telegram Forwarder Bot
+After=network.target network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/email2telegram
+# The -u flag forces stdin, stdout and stderr to be totally unbuffered. Good for logging.
+ExecStart=/usr/bin/python3 -u email2telegram.py
+
+# Restart the service if it crashes
+Restart=always
+# Wait 10 seconds before restarting
+RestartSec=10
+
+# Standard output to journald (modern replacement for syslog)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=email-telegram-bot
+
+# Give the service a little time to start cleanly
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target
