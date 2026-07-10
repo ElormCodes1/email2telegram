@@ -68,8 +68,11 @@ def test_filters_return_only_matching_and_pass_days_since():
     assert r.status_code == 200
     data = r.json()
     assert data["count"] == 1
-    assert data["emails"][0]["subject"] == "[Last War] Account Sign In"
-    assert data["emails"][0]["email_id"] == "1"
+    # response items are parsed plain-text blocks (From/Subject/Body)
+    text = data["emails"][0]
+    assert text.startswith("From: a@b.com")
+    assert "Subject: [Last War] Account Sign In" in text
+    assert "Body:\nverify your Email" in text
     assert FakeClient.last_since == 15
     # subject is pushed to the IMAP search so only matching mail is downloaded
     assert FakeClient.last_subject == "Last War"

@@ -15,21 +15,14 @@ from pydantic import BaseModel
 from config import Config
 from email_client import EmailClient, IMAPConnectionError
 from filters import EmailFilter
+from formatter import MessageFormatter
 
 app = FastAPI(title="Email2Telegram API")
 
 
-class EmailOut(BaseModel):
-    folder: str
-    email_id: str
-    sender: str
-    subject: str
-    body: str
-
-
 class EmailsResponse(BaseModel):
     count: int
-    emails: List[EmailOut]
+    emails: List[str]
 
 
 @app.get("/")
@@ -73,18 +66,10 @@ def get_emails(
         client.close()
 
     email_filter = EmailFilter(filter_subject, filter_body)
+    formatter = MessageFormatter()
     matched = [e for e in emails if email_filter.matches(e)]
 
     return EmailsResponse(
         count=len(matched),
-        emails=[
-            EmailOut(
-                folder=e.folder,
-                email_id=e.email_id,
-                sender=e.sender,
-                subject=e.subject,
-                body=e.body,
-            )
-            for e in matched
-        ],
+        emails=[formatter.to_text(e) for e in matched],
     )
